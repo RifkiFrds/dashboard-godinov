@@ -2,7 +2,7 @@ import React from "react"
 import { useState } from "react";
 import api from "../api";
 import { Button } from "../components/ui/button";
-import { H2, Text } from "../components/ui/text";
+import { H2, Text } from "../components/ui/Text";
 import { useNavigate } from "react-router-dom";
 import { Lock, Mail } from "lucide-react";
 import Footer from "../components/Footer";
