@@ -7,7 +7,6 @@ import { useNavigate } from "react-router-dom";
 import { Lock, Mail } from "lucide-react";
 import Footer from "../components/Footer";
 import Lottie from "react-lottie-player";
-import loginAnimation from "../assets/animation/login.json";
 import { toast } from "react-toastify";
 
 export default function Login() {
@@ -45,9 +44,9 @@ export default function Login() {
       <div className="flex-1 grid grid-cols-1 md:grid-cols-2">
         <div className="hidden md:flex items-center justify-center p-10">
           <Lottie 
+            path="/lottie/login.json"
             loop
             play
-            animationData={loginAnimation}
             className="w-[85%] h-[85%]"
           />
         </div>

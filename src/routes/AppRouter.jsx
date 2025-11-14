@@ -1,9 +1,9 @@
 import React from "react";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
-import Login from "../pages/LoginPage";
-import Dashboard from "../pages/DashboardPage";
-import Messages from "../pages/MessagesPage";
 import DashboardLayout from "../layouts/DashboardLayout";
+import LoginPage from "../pages/LoginPage";
+import DashboardPage from "../pages/DashboardPage";
+import MessagesPage from "../pages/MessagesPage";
 
 export default function AppRouter() {
 
@@ -19,7 +19,7 @@ export default function AppRouter() {
       <Routes>
 
         {/* Public */}
-        <Route path="/login" element={<Login />} />
+        <Route path="/login" element={<LoginPage />} />
 
         {/* Protected */}
         <Route 
@@ -30,8 +30,8 @@ export default function AppRouter() {
             </PrivateRoute>
           }
         >
-          <Route index element={<Dashboard />} />
-          <Route path="/inbox" element={<Messages />} />
+          <Route index element={<DashboardPage />} />
+          <Route path="/inbox" element={<MessagesPage />} />
         </Route>
 
       </Routes>

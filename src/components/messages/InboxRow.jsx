@@ -30,11 +30,13 @@ export default function InboxRow({ item, onOpen, onUpdated }) {
 
   return (
     <>
-      <tr className="border-b border-gray-100 text-sm">
-        <td className="py-3">{item.name}</td>
-        <td>{item.company}</td>
+      <tr className="border-b border-gray-100 text-sm flex flex-col sm:table-row p-3 sm:p-0">
 
-        <td>
+        <td className="py-2 sm:py-3">{item.name}</td>
+
+        <td className="py-2">{item.company}</td>
+
+        <td className="py-2">
           <span
             className={`px-2 py-1 rounded text-xs ${
               statusText === "sudah diproses"
@@ -46,19 +48,17 @@ export default function InboxRow({ item, onOpen, onUpdated }) {
           </span>
         </td>
 
-        <td>{item.created_at}</td>
+        <td className="py-2 break-all">{item.created_at}</td>
 
-        <td className="text-right mt-2 flex items-center gap-3 justify-end">
-          {/* Detail */}
+        <td className="sm:text-right flex flex-wrap sm:flex-nowrap gap-2 sm:gap-3 justify-end mt-3 sm:mt-0">
+
           <button
             onClick={onOpen}
             className="flex items-center gap-1 px-3 py-1.5 text-xs bg-blue-50 text-blue-700 rounded-lg hover:bg-blue-100 transition"
           >
-            <Eye size={16} />
-            Detail
+            <Eye size={16} /> Detail
           </button>
 
-          {/* Toggle Status */}
           <button
             onClick={handleStatusChange}
             className={`flex items-center gap-1 px-3 py-1.5 text-xs rounded-lg transition 
@@ -68,15 +68,10 @@ export default function InboxRow({ item, onOpen, onUpdated }) {
                   : "bg-green-50 text-green-700 hover:bg-green-100"
               }`}
           >
-            {statusText === "sudah diproses" ? (
-              <XCircle size={16} />
-            ) : (
-              <CheckCircle size={16} />
-            )}
+            {statusText === "sudah diproses" ? <XCircle size={16} /> : <CheckCircle size={16} />}
             {statusText === "sudah diproses" ? "Batalkan" : "Proses"}
           </button>
 
-          {/* Delete */}
           <button
             onClick={() => setOpenConfirm(true)}
             className="flex items-center gap-1 px-3 py-1.5 text-xs bg-red-50 text-red-700 rounded-lg hover:bg-red-100 transition"
@@ -84,6 +79,7 @@ export default function InboxRow({ item, onOpen, onUpdated }) {
             <Trash2 size={16} />
             Hapus
           </button>
+
         </td>
       </tr>
 

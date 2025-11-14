@@ -4,8 +4,7 @@ import InboxRow from "../components/messages/InboxRow";
 import InboxDetailModal from "../components/messages/InboxDetailModal";
 import { H2 } from "../components/ui/Text";
 
-export default function Messages() {
-
+export default function MessagesPage() {
   const [messages, setMessages] = useState([]);
   const [selected, setSelected] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -14,8 +13,8 @@ export default function Messages() {
     try {
       const res = await api.get("/api/inbox");
       setMessages(Array.isArray(res.data.data) ? res.data.data : []);
-    } catch (e) {
-      console.error("Error fetching messages:", e);
+    } catch (err) {
+      console.error("Error fetching messages:", err);
     } finally {
       setLoading(false);
     }
@@ -32,8 +31,8 @@ export default function Messages() {
       {loading && <p className="text-gray-500">Memuat pesan...</p>}
 
       {!loading && (
-        <div className="bg-white rounded-xl p-4 shadow-sm border border-gray-200">
-          <table className="w-full text-left">
+        <div className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm">
+          <table className="w-full text-left sm:table hidden sm:table">
             <thead>
               <tr className="border-b border-gray-200 text-sm text-gray-600">
                 <th className="py-3">Nama</th>
@@ -43,18 +42,18 @@ export default function Messages() {
                 <th className="text-right">Aksi</th>
               </tr>
             </thead>
-
-            <tbody>
-              {messages.map((m) => (
-                <InboxRow
-                  key={m.id}
-                  item={m}
-                  onOpen={() => setSelected(m.id)}
-                  onUpdated={fetchMessages}
-                />
-              ))}
-            </tbody>
           </table>
+
+          <tbody className="w-full block sm:table-row-group">
+            {messages.map((m) => (
+              <InboxRow
+                key={m.id}
+                item={m}
+                onOpen={() => setSelected(m.id)}
+                onUpdated={fetchMessages}
+              />
+            ))}
+          </tbody>
         </div>
       )}
 

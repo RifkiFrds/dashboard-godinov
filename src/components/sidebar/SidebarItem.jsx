@@ -4,7 +4,6 @@ import { cn } from "../../lib/utils";
 import { handleLogout } from "../../utils/logout";
 
 export default function SidebarItem({ icon: Icon, label, to, collapsed }) {
-
   const isLogout = label === "Logout";
 
   const handleClick = (e) => {
@@ -20,7 +19,7 @@ export default function SidebarItem({ icon: Icon, label, to, collapsed }) {
       onClick={handleClick}
       className={({ isActive }) =>
         cn(
-          "flex items-center gap-3 px-3 py-2 text-sm font-medium rounded-lg transition-colors",
+          "flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors",
           "hover:bg-white/10 hover:text-white",
           isActive ? "bg-white/20 text-white" : "text-white/70"
         )

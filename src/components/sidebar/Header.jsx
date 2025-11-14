@@ -3,12 +3,11 @@ import { Menu, ChevronLeft } from "lucide-react";
 
 export default function Header({ collapsed, setCollapsed }) {
   return (
-    <header className="h-16 bg-white shadow-sm border-b border-gray-200 flex items-center px-4">
-      
+    <header className="flex h-16 items-center border-b border-gray-200 bg-white px-4 shadow-sm">
       {/* Sidebar Toggle */}
       <button
         onClick={() => setCollapsed(!collapsed)}
-        className="p-2 rounded-lg hover:bg-gray-100 transition-colors"
+        className="rounded-lg p-2 transition-colors hover:bg-gray-100"
       >
         {collapsed ? <ChevronLeft size={22} /> : <Menu size={22} />}
       </button>
@@ -18,14 +17,11 @@ export default function Header({ collapsed, setCollapsed }) {
 
       {/* Right Section */}
       <div className="ml-auto flex items-center gap-4">
-        
-        {/* Profile Avatar */}
         <img
           src="https://cdn-icons-png.flaticon.com/512/1169/1169520.png"
           alt="Admin Avatar"
-          className="h-10 w-10 object-cover rounded-full border border-gray-300 shadow-sm hover:shadow-md transition"
+          className="h-10 w-10 rounded-full border border-gray-300 object-cover shadow-sm transition hover:shadow-md"
         />
-
       </div>
     </header>
   );
