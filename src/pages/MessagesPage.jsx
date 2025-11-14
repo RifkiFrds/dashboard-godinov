@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import api from "../api";
 import InboxRow from "../components/messages/InboxRow";
 import InboxDetailModal from "../components/messages/InboxDetailModal";
-import { H2 } from "../components/ui/text";
+import { H2 } from "../components/ui/Text";
 
 export default function Messages() {
 
