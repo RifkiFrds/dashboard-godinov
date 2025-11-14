@@ -1,7 +1,7 @@
 import React from "react"
 import { useState } from "react";
 import api from "../api";
-import { Button } from "../components/ui/button";
+import { Button } from "../components/ui/Button";
 import { H2, Text } from "../components/ui/Text";
 import { useNavigate } from "react-router-dom";
 import { Lock, Mail } from "lucide-react";
