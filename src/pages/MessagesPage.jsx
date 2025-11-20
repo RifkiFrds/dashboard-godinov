@@ -31,8 +31,9 @@ export default function MessagesPage() {
       {loading && <p className="text-gray-500">Memuat pesan...</p>}
 
       {!loading && (
-        <div className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm">
-          <table className="w-full text-left sm:table hidden sm:table">
+        <div className="rounded-xl border border-gray-200 bg-white p-4 sm:p-6 shadow-sm">
+          {/* Table header only for desktop */}
+          <table className="w-full text-left hidden sm:table table-auto">
             <thead>
               <tr className="border-b border-gray-200 text-sm text-gray-600">
                 <th className="py-3">Nama</th>
@@ -42,9 +43,20 @@ export default function MessagesPage() {
                 <th className="text-right">Aksi</th>
               </tr>
             </thead>
+            <tbody>
+              {messages.map((m) => (
+                <InboxRow
+                  key={m.id}
+                  item={m}
+                  onOpen={() => setSelected(m.id)}
+                  onUpdated={fetchMessages}
+                />
+              ))}
+            </tbody>
           </table>
 
-          <tbody className="w-full block sm:table-row-group">
+          {/* Mobile list */}
+          <div className="sm:hidden">
             {messages.map((m) => (
               <InboxRow
                 key={m.id}
@@ -53,11 +65,10 @@ export default function MessagesPage() {
                 onUpdated={fetchMessages}
               />
             ))}
-          </tbody>
+          </div>
         </div>
       )}
 
-      {/* Modal Detail */}
       {selected && (
         <InboxDetailModal
           id={selected}
