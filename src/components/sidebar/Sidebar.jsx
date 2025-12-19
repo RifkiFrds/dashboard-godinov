@@ -1,5 +1,5 @@
 import React from "react";
-import { LayoutDashboard, Mail, LogOut } from "lucide-react";
+import { LayoutDashboard, Mail, LogOut, NotebookTabs } from "lucide-react";
 import SidebarItem from "./SidebarItem";
 import { motion } from "framer-motion";
 import logo from "../../assets/images/logo.png";
@@ -27,6 +27,7 @@ export default function Sidebar({ collapsed }) {
       <nav className="flex flex-1 flex-col gap-1">
         <SidebarItem icon={LayoutDashboard} label="Dashboard" to="/" collapsed={collapsed} />
         <SidebarItem icon={Mail} label="Pesan" to="/inbox" collapsed={collapsed} />
+        <SidebarItem icon={NotebookTabs} label="Portfolio" to="/portfolio" collapsed={collapsed} />
       </nav>
 
       {/* Bottom Divider */}
