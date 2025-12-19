@@ -4,6 +4,7 @@ import DashboardLayout from "../layouts/DashboardLayout";
 import LoginPage from "../pages/LoginPage";
 import DashboardPage from "../pages/DashboardPage";
 import MessagesPage from "../pages/MessagesPage";
+import PortfolioPage from "../pages/PortfolioPage";
 
 export default function AppRouter() {
 
@@ -32,6 +33,7 @@ export default function AppRouter() {
         >
           <Route index element={<DashboardPage />} />
           <Route path="/inbox" element={<MessagesPage />} />
+          <Route path="/portfolio" element={<PortfolioPage />} />
         </Route>
 
       </Routes>

@@ -8,6 +8,7 @@ import { Lock, Mail } from "lucide-react";
 import Footer from "../components/Footer";
 import Lottie from "react-lottie-player";
 import { toast } from "react-toastify";
+import { setItemWithExpiry } from "../api/storage";
 
 export default function Login() {
   const navigate = useNavigate();
@@ -24,7 +25,7 @@ export default function Login() {
 
     try {
       const res = await api.post("/api/login", { email, password });
-      localStorage.setItem("token", res.data);
+      setItemWithExpiry("token", res.data.token, 3600000);// 1 j a m
       toast.success("Berhasil login!");
       navigate("/");
     } catch (err) {
