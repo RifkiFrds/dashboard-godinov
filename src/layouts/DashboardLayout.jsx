@@ -7,23 +7,23 @@ export default function DashboardLayout() {
   const [collapsed, setCollapsed] = useState(false);
 
   return (
-    <div className="flex min-h-screen bg-[#F4F5FA]">
+  <div className="flex h-screen overflow-hidden bg-gray-50">
+      {/* SIDEBAR*/}
+      <Sidebar collapsed={collapsed} />
 
-      {/* Sidebar */}
-      <Sidebar collapsed={collapsed} setCollapsed={setCollapsed} />
-
-      {/* Right Content */}
-      <div className="flex-1 flex flex-col">
-
-        {/* Header */}
+      {/* AREA KANAN */}
+      <div className="relative flex flex-1 flex-col overflow-y-auto overflow-x-hidden">
+        
+        {/* HEADER*/}
         <Header collapsed={collapsed} setCollapsed={setCollapsed} />
 
-        {/* Content */}
-        <main className="p-6">
-          <Outlet />
+        {/* CONTENT*/}
+        <main className="p-6 transition-all duration-300">
+           <div className="mx-auto max-w-7xl">
+              <Outlet /> 
+           </div>
         </main>
-
+        
       </div>
     </div>
-  );
-}
+)}

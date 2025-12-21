@@ -1,5 +1,5 @@
 import React from "react";
-import { LayoutDashboard, Mail, LogOut, NotebookTabs } from "lucide-react";
+import { LayoutDashboard, Mail, LogOut, NotebookTabs, ListTodo } from "lucide-react";
 import SidebarItem from "./SidebarItem";
 import { motion } from "framer-motion";
 import logo from "../../assets/images/logo.png";
@@ -24,10 +24,11 @@ export default function Sidebar({ collapsed }) {
       <div className="mb-4 h-px w-full bg-gradient-to-r from-transparent via-white/10 to-transparent" />
 
       {/* Menu */}
-      <nav className="flex flex-1 flex-col gap-1">
+      <nav className="flex flex-1 flex-col gap-1 overflow-y-auto overflow-x-hidden custom-scrollbar pr-1">
         <SidebarItem icon={LayoutDashboard} label="Dashboard" to="/" collapsed={collapsed} />
         <SidebarItem icon={Mail} label="Pesan" to="/inbox" collapsed={collapsed} />
         <SidebarItem icon={NotebookTabs} label="Portfolio" to="/portfolio" collapsed={collapsed} />
+        <SidebarItem icon={ListTodo} label="Project" to="/projects" collapsed={collapsed} />
       </nav>
 
       {/* Bottom Divider */}
