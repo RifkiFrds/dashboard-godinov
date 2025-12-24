@@ -18,9 +18,9 @@ export default function Dashboard() {
     setLoading(true);
     try {
       const [inboxRes, clientRes, processedRes] = await Promise.all([
-        api.get("/api/totalInbox"),
-        api.get("/api/totalKlien"),
-        api.get("/api/totalDiproses"),
+        api.get("/api/inbox/stats/total"),
+        api.get("/api/inbox/stats/clients"),
+        api.get("/api/inbox/stats/processed"),
       ]);
       const inboxTotal = inboxRes.data["Total Inbox"] || 0;
       const clientTotal = clientRes.data["Total Klien"] || 0;

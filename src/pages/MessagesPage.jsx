@@ -11,7 +11,7 @@ export default function MessagesPage() {
 
   const fetchMessages = async () => {
     try {
-      const res = await api.get("/api/inbox");
+      const res = await api.get("/api/inbox/");
       setMessages(Array.isArray(res.data.data) ? res.data.data : []);
     } catch (err) {
       console.error("Error fetching messages:", err);

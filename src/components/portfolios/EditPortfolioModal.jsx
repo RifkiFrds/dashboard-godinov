@@ -33,7 +33,7 @@ export default function EditPortfolioModal({ isOpen, onClose, onSuccess, item })
   const token = localStorage.getItem("token");
 
   try {
-    const response = await api.put(`/api/updateTextPortfolio/${item.id}`, {
+    const response = await api.put(`/api/portfolio/${item.id}`, {
       title: formData.title,
       description: formData.description,
       link_projects: formData.link_projects

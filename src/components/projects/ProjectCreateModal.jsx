@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { X, Save, FolderGit2, Calendar, Layout, Server, Code, Clock, AlignLeft } from "lucide-react";
 import { toast } from "react-toastify"; 
 import api from "../../api"; 
@@ -6,35 +6,34 @@ import api from "../../api";
 export default function ProjectCreateModal({ isOpen, onClose, onSuccess }) {
   const [loading, setLoading] = useState(false);
   
-
   const [formData, setFormData] = useState({
+    project_code: "",
     name: "",
     description: "",
+    client_name: "",
+    service_type: "",
     deadline: "",
     status: "Planning",
-    budget: "",
-    // Estimasi jam kerja per role (penting untuk tracking progress)
-    estimates: {
+    team_count: 0,
+    // Progress initial (akan diupdate otomatis berdasarkan tasks)
+    progress: {
       uiux: 0,
       backend: 0,
       frontend: 0
     }
   });
 
-  // Total jam otomatis dihitung untuk estimasi scope project
-  const totalHours = Number(formData.estimates.uiux) + Number(formData.estimates.backend) + Number(formData.estimates.frontend);
-
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
-  const handleEstimateChange = (role, value) => {
+  const handleProgressChange = (role, value) => {
     setFormData(prev => ({
       ...prev,
-      estimates: {
-        ...prev.estimates,
-        [role]: value
+      progress: {
+        ...prev.progress,
+        [role]: Number(value)
       }
     }));
   };
@@ -44,23 +43,56 @@ export default function ProjectCreateModal({ isOpen, onClose, onSuccess }) {
     setLoading(true);
 
     try {
-      // Simulasi API Call ke Laravel
-      // POST /api/projects
-      // Payload akan dikirim beserta 'estimates' agar Backend bisa generate task placeholder
-      await api.post("/api/projects", formData);
-      
-      toast.success("Project baru berhasil dibuat!");
-      onSuccess(); // Refresh list di halaman utama
-      onClose();   // Tutup modal
-      
-      // Reset Form
-      setFormData({
-        name: "", description: "", deadline: "", status: "Planning", budget: "",
-        estimates: { uiux: 0, backend: 0, frontend: 0 }
+      // Validasi project_code
+      if (!formData.project_code || formData.project_code.trim() === "") {
+        toast.error("Project code harus diisi!");
+        setLoading(false);
+        return;
+      }
+
+      // POST ke API Laravel
+      const response = await api.post("/api/projects", {
+        project_code: formData.project_code.toUpperCase(),
+        name: formData.name,
+        description: formData.description,
+        client_name: formData.client_name,
+        service_type: formData.service_type,
+        deadline: formData.deadline,
+        status: formData.status,
+        team_count: Number(formData.team_count) || 0,
+        progress: formData.progress
       });
+      
+      if (response.data.success) {
+        toast.success("Project baru berhasil dibuat! 🎉");
+        onSuccess(); // Refresh list di halaman utama
+        onClose();   // Tutup modal
+        
+        // Reset Form
+        setFormData({
+          project_code: "",
+          name: "",
+          description: "",
+          client_name: "",
+          service_type: "",
+          deadline: "",
+          status: "Planning",
+          team_count: 0,
+          progress: { uiux: 0, backend: 0, frontend: 0 }
+        });
+      }
     } catch (error) {
       console.error("Create project error:", error);
-      toast.error("Gagal membuat project.");
+      
+      if (error.response?.data?.message) {
+        toast.error(error.response.data.message);
+      } else if (error.response?.status === 422) {
+        // Validation errors
+        const errors = error.response.data.errors;
+        Object.values(errors).flat().forEach(err => toast.error(err));
+      } else {
+        toast.error("Gagal membuat project. Silakan coba lagi.");
+      }
     } finally {
       setLoading(false);
     }
@@ -77,11 +109,15 @@ export default function ProjectCreateModal({ isOpen, onClose, onSuccess }) {
           <div>
             <h3 className="text-lg font-bold text-gray-800 flex items-center gap-2">
               <FolderGit2 className="text-blue-600" size={20}/> 
-              Initiate New Project
+              Create New Project
             </h3>
             <p className="text-xs text-gray-500 mt-0.5">Definisikan scope, deadline, dan alokasi tim.</p>
           </div>
-          <button onClick={onClose} className="p-2 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors">
+          <button 
+            onClick={onClose} 
+            disabled={loading}
+            className="p-2 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors disabled:opacity-50"
+          >
             <X size={20} />
           </button>
         </div>
@@ -92,41 +128,101 @@ export default function ProjectCreateModal({ isOpen, onClose, onSuccess }) {
             
             {/* SECTION 1: GENERAL INFO */}
             <div className="space-y-4">
-              <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-1.5">Nama Project</label>
-                <input
-                  type="text"
-                  name="name"
-                  value={formData.name}
-                  onChange={handleChange}
-                  placeholder="Contoh: Super App Finance 2.0"
-                  className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none text-sm transition-all"
-                  required
-                />
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-1.5">
+                    Project Code <span className="text-red-500">*</span>
+                  </label>
+                  <input
+                    type="text"
+                    name="project_code"
+                    value={formData.project_code}
+                    onChange={handleChange}
+                    placeholder="e.g., GDN-CYBER"
+                    className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none text-sm transition-all uppercase"
+                    required
+                  />
+                  <p className="text-xs text-gray-400 mt-1">Kode unik untuk client tracking</p>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-1.5">
+                    Nama Project <span className="text-red-500">*</span>
+                  </label>
+                  <input
+                    type="text"
+                    name="name"
+                    value={formData.name}
+                    onChange={handleChange}
+                    placeholder="E-Commerce Platform"
+                    className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none text-sm transition-all"
+                    required
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-1.5">
+                    Client Name <span className="text-red-500">*</span>
+                  </label>
+                  <input
+                    type="text"
+                    name="client_name"
+                    value={formData.client_name}
+                    onChange={handleChange}
+                    placeholder="PT. Technology Indonesia"
+                    className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none text-sm transition-all"
+                    required
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-1.5">
+                    Service Type <span className="text-red-500">*</span>
+                  </label>
+                  <select
+                    name="service_type"
+                    value={formData.service_type}
+                    onChange={handleChange}
+                    className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none text-sm transition-all"
+                    required
+                  >
+                    <option value="">Pilih Service</option>
+                    <option value="Web Development">Web Development</option>
+                    <option value="Mobile App Development">Mobile App Development</option>
+                    <option value="Cyber Security">Cyber Security</option>
+                    <option value="UI/UX Design">UI/UX Design</option>
+                    <option value="Full Stack Development">Full Stack Development</option>
+                    <option value="Enterprise System">Enterprise System</option>
+                  </select>
+                </div>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-semibold text-gray-700 mb-1.5 flex items-center gap-2">
-                    <Calendar size={14}/> Deadline Target
+                    <Calendar size={14}/> Deadline <span className="text-red-500">*</span>
                   </label>
                   <input
                     type="date"
                     name="deadline"
                     value={formData.deadline}
                     onChange={handleChange}
+                    min={new Date().toISOString().split('T')[0]}
                     className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none text-sm transition-all"
                     required
                   />
                 </div>
                 <div>
-                   <label className="block text-sm font-semibold text-gray-700 mb-1.5">Estimasi Budget (IDR)</label>
-                   <input
+                  <label className="block text-sm font-semibold text-gray-700 mb-1.5">Team Size</label>
+                  <input
                     type="number"
-                    name="budget"
-                    value={formData.budget}
+                    name="team_count"
+                    value={formData.team_count}
                     onChange={handleChange}
-                    placeholder="Opsional"
+                    min="0"
+                    placeholder="5"
                     className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none text-sm transition-all"
                   />
                 </div>
@@ -134,7 +230,7 @@ export default function ProjectCreateModal({ isOpen, onClose, onSuccess }) {
 
               <div>
                 <label className="block text-sm font-semibold text-gray-700 mb-1.5 flex items-center gap-2">
-                  <AlignLeft size={14}/> Deskripsi & Scope
+                  <AlignLeft size={14}/> Deskripsi Project <span className="text-red-500">*</span>
                 </label>
                 <textarea
                   name="description"
@@ -150,15 +246,12 @@ export default function ProjectCreateModal({ isOpen, onClose, onSuccess }) {
 
             <hr className="border-gray-100" />
 
-            {/* SECTION 2: RESOURCE ESTIMATION*/}
+            {/* SECTION 2: INITIAL PROGRESS (Optional) */}
             <div>
               <div className="flex items-center justify-between mb-3">
-                 <h4 className="text-sm font-bold text-gray-800 flex items-center gap-2">
-                   <Clock size={16} className="text-gray-500"/> Resource Estimation (Hours)
-                 </h4>
-                 <span className="text-xs bg-gray-100 px-2 py-1 rounded text-gray-600 font-medium">
-                   Total Scope: {totalHours} Jam
-                 </span>
+                <h4 className="text-sm font-bold text-gray-800 flex items-center gap-2">
+                  <Clock size={16} className="text-gray-500"/> Initial Progress (Optional)
+                </h4>
               </div>
               
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
@@ -170,10 +263,12 @@ export default function ProjectCreateModal({ isOpen, onClose, onSuccess }) {
                   <input
                     type="number"
                     min="0"
-                    value={formData.estimates.uiux}
-                    onChange={(e) => handleEstimateChange('uiux', e.target.value)}
+                    max="100"
+                    value={formData.progress.uiux}
+                    onChange={(e) => handleProgressChange('uiux', e.target.value)}
                     className="w-full px-3 py-2 bg-white border border-purple-200 rounded-md focus:ring-2 focus:ring-purple-500/20 outline-none text-sm font-semibold text-gray-700"
                   />
+                  <span className="text-xs text-purple-600 mt-1 block">%</span>
                 </div>
 
                 {/* Backend Input */}
@@ -184,10 +279,12 @@ export default function ProjectCreateModal({ isOpen, onClose, onSuccess }) {
                   <input
                     type="number"
                     min="0"
-                    value={formData.estimates.backend}
-                    onChange={(e) => handleEstimateChange('backend', e.target.value)}
+                    max="100"
+                    value={formData.progress.backend}
+                    onChange={(e) => handleProgressChange('backend', e.target.value)}
                     className="w-full px-3 py-2 bg-white border border-orange-200 rounded-md focus:ring-2 focus:ring-orange-500/20 outline-none text-sm font-semibold text-gray-700"
                   />
+                  <span className="text-xs text-orange-600 mt-1 block">%</span>
                 </div>
 
                 {/* Frontend Input */}
@@ -198,14 +295,16 @@ export default function ProjectCreateModal({ isOpen, onClose, onSuccess }) {
                   <input
                     type="number"
                     min="0"
-                    value={formData.estimates.frontend}
-                    onChange={(e) => handleEstimateChange('frontend', e.target.value)}
+                    max="100"
+                    value={formData.progress.frontend}
+                    onChange={(e) => handleProgressChange('frontend', e.target.value)}
                     className="w-full px-3 py-2 bg-white border border-blue-200 rounded-md focus:ring-2 focus:ring-blue-500/20 outline-none text-sm font-semibold text-gray-700"
                   />
+                  <span className="text-xs text-blue-600 mt-1 block">%</span>
                 </div>
               </div>
               <p className="text-[11px] text-gray-400 mt-2 italic">
-                *Estimasi ini akan digunakan untuk mengukur persentase progres di dashboard.
+                *Progress akan otomatis ter-update saat task diselesaikan
               </p>
             </div>
 
@@ -217,7 +316,7 @@ export default function ProjectCreateModal({ isOpen, onClose, onSuccess }) {
           <button
             onClick={onClose}
             disabled={loading}
-            className="px-5 py-2.5 text-sm font-medium text-gray-600 hover:bg-white hover:text-gray-800 hover:shadow-sm rounded-lg transition-all border border-transparent hover:border-gray-200"
+            className="px-5 py-2.5 text-sm font-medium text-gray-600 hover:bg-white hover:text-gray-800 hover:shadow-sm rounded-lg transition-all border border-transparent hover:border-gray-200 disabled:opacity-50"
           >
             Batal
           </button>
@@ -228,7 +327,10 @@ export default function ProjectCreateModal({ isOpen, onClose, onSuccess }) {
             className="inline-flex items-center gap-2 px-6 py-2.5 bg-gray-900 text-white text-sm font-medium rounded-lg hover:bg-gray-800 active:transform active:scale-95 transition-all shadow-lg shadow-gray-200 disabled:opacity-70 disabled:cursor-not-allowed"
           >
             {loading ? (
-              <span className="animate-pulse">Menyimpan...</span>
+              <>
+                <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                <span>Creating...</span>
+              </>
             ) : (
               <>
                 <Save size={16} /> Create Project

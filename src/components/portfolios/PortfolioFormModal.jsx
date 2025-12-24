@@ -49,7 +49,7 @@ export default function PortfolioFormModal({ isOpen, onClose, onSuccess }) {
 
     try {
 
-      const response = await api.post("/api/uploadPortfolio", payload, {
+      const response = await api.post("/api/portfolio", payload, {
         headers: { "Content-Type": "multipart/form-data" },
       });
 

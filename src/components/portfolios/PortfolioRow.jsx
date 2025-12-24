@@ -11,7 +11,7 @@ export default function PortfolioRow({ item, onOpen, onUpdated, isMobile }) {
   const handleDelete = async () => {
     setIsDeleting(true);
     try {
-      await api.delete(`/api/deletePortfolio/${item.id}`);
+      await api.delete(`/api/portfolio/${item.id}`);
       toast.success("Portfolio berhasil dihapus");
       onUpdated();
     } catch (error) {
