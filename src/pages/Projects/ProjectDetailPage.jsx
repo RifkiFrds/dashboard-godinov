@@ -49,6 +49,7 @@ const TaskCard = ({ task, index, onStatusChange, projectStatus, onDeleteSuccess,
   const [showEditModal, setShowEditModal] = useState(false);
   const [editData, setEditData] = useState({ title: task.title, priority: task.priority });
   const menuRef = useRef(null);
+  const { id } = useParams();
   
   //close menu dragdown
   useEffect(() => {
@@ -93,17 +94,32 @@ const TaskCard = ({ task, index, onStatusChange, projectStatus, onDeleteSuccess,
     setShowMenu(false);
   };
 
-  const handleUpdateTask = async (e) => {
-    e.preventDefault();
-    try {
-      await api.put(`/api/projects/${task.project_id}/tasks/${task.id}`, editData);
-      toast.success("Task berhasil diperbarui");
-      setShowEditModal(false);
-      if (onUpdateSuccess) onUpdateSuccess();
-    } catch (error) {
-      toast.error("Gagal memperbarui task");
-    }
-  };
+  // const handleUpdateTask = async (e) => {
+  //   e.preventDefault();
+  //   const projectId = task.project_id || id;
+
+  //   try {
+  //     const response = await api.patch(
+  //       `/api/projects/${projectId}/tasks/${task.id}`, 
+  //       editData // Kirim editData langsung
+  //     );
+
+  //     if (response.data.success) {
+  //       // Sesuai log: response.data.data.task
+  //       const updatedTask = response.data.data.task; 
+        
+  //       toast.success("Task berhasil diperbarui");
+  //       setShowEditModal(false);
+        
+  //       if (onUpdateSuccess) {
+  //         onUpdateSuccess(updatedTask); 
+  //       }
+  //     }
+  //   } catch (error) {
+  //     console.error("Update error:", error);
+  //     toast.error("Gagal memperbarui task");
+  //   }
+  // };
 
   const getPriorityColor = (p) => {
     switch (p) {
@@ -170,12 +186,12 @@ return (
 
               {showMenu && (
                 <div className="absolute right-0 mt-1 w-32 bg-white border border-gray-100 rounded-lg shadow-xl z-50 py-1 animate-in fade-in zoom-in duration-150">
-                  <button
+        {/*          <button
                     onClick={(e) => { e.stopPropagation(); setShowEditModal(true); setShowMenu(false); }}
                     className="w-full flex items-center gap-2 px-3 py-2 text-xs text-gray-600 hover:bg-blue-50 hover:text-blue-600"
                   >
                     <Edit2 size={12} /> Edit
-                  </button>
+                  </button>*/}
                   <button
                     onClick={handleDeleteTask}
                     className="w-full flex items-center gap-2 px-3 py-2 text-xs text-red-600 hover:bg-red-50"
@@ -207,7 +223,7 @@ return (
         </div>
 
         {/* --- MODAL EDIT  --- */}
-        {showEditModal && (
+{/*        {showEditModal && (
           <div className="fixed inset-0 z-[110] flex items-center justify-center p-4 bg-black/40 backdrop-blur-[2px]">
             <div className="bg-white rounded-xl w-full max-w-sm shadow-2xl overflow-hidden" onClick={(e) => e.stopPropagation()}>
               <div className="flex justify-between items-center p-4 border-b">
@@ -236,6 +252,18 @@ return (
                     <option value="Critical">Critical</option>
                   </select>
                 </div>
+                <div>
+                  <label className="block text-[10px] font-bold text-gray-400 uppercase mb-1">Status</label>
+                  <select
+                    className="w-full border rounded-lg px-3 py-2 text-sm outline-none"
+                    value={editData.status}
+                    onChange={(e) => setEditData({ ...editData, status: e.target.value })}
+                  >
+                    <option value="To Do">To Do</option>
+                    <option value="In Progress">In Progress</option>
+                    <option value="Done">Done</option>
+                  </select>
+                </div>
                 <div className="flex gap-2">
                   <button type="button" onClick={() => setShowEditModal(false)} className="flex-1 py-2 text-sm font-bold text-gray-500 border rounded-lg">Batal</button>
                   <button type="submit" className="flex-1 py-2 text-sm font-bold bg-blue-600 text-white rounded-lg">Simpan</button>
@@ -243,7 +271,7 @@ return (
               </form>
             </div>
           </div>
-        )}
+        )}*/}
       </div>
     )}
   </Draggable>
@@ -398,7 +426,7 @@ const onDragEnd = async (result) => {
     await api.patch(`/api/projects/${id}/tasks/${draggableId}`, {
       status: newStatus
     });
-    // Jika sukses, biarkan saja. UI sudah di posisi yang benar.
+    // Jika sukses
     toast.success(`Status diperbarui ke ${newStatus}`, { autoClose: 1000 });
   } catch (error) {
     // --- Jika GAGAL, baru tarik data ulang untuk reset posisi ---
@@ -436,6 +464,13 @@ const handleAddTask = (role) => {
   setIsModalOpen(true);
 };
 
+const handleTaskUpdate = (updatedTask) => {
+  setTasks(prevTasks => {
+    return prevTasks.map(t => 
+      t.id === updatedTask.id ? { ...t, ...updatedTask } : t
+    );
+  });
+};
 
 
   if (loading) {

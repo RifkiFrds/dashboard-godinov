@@ -55,6 +55,17 @@ export default function ProjectManagementPage() {
     fetchProjects();
   }, []);
 
+  const handleDeleteSuccess = (deletedId) => {
+    // Filter projects untuk menghapus project dengan ID yang baru saja didelete
+    setProjects((prevProjects) => prevProjects.filter(p => p.id !== deletedId));
+  };
+
+  const handleUpdateSuccess = (updatedProject) => {
+    setProjects((prevProjects) => 
+      prevProjects.map((p) => (p.id === updatedProject.id ? updatedProject : p))
+    );
+  };
+
   const tabs = ["All", "In Progress", "Review", "Planning", "Completed"];
   
   // Filter berdasarkan tab dan search query
@@ -140,6 +151,8 @@ export default function ProjectManagementPage() {
                 key={project.id} 
                 project={project} 
                 onSelect={(p) => console.log("Navigating to:", p.name)}
+                onDeleteSuccess={handleDeleteSuccess}
+                onUpdateSuccess={handleUpdateSuccess}
               />
             ))}
             </div>

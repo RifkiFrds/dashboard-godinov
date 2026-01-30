@@ -33,23 +33,39 @@ const ProjectCard = ({ project, onSelect, onDeleteSuccess, onUpdateSuccess }) =>
     e.stopPropagation();
     if (window.confirm(`Hapus proyek "${project.name}"?`)) {
       try {
-        await api.delete(`/projects/${project.id}`);
+       const response = await api.delete(`/api/projects/${project.id}`);
+        if (response.status === 200 || response.data?.success){
         toast.success("Berhasil dihapus");
-        if (onDeleteSuccess) onDeleteSuccess(project.id);
-      } catch (err) { toast.error("Gagal menghapus"); }
+        }
+        if (onDeleteSuccess) {
+          onDeleteSuccess(project.id);
+        }
+      } catch (err) { 
+          toast.error("Gagal menghapus");
+          console.error(err); 
+      }
     }
     setShowMenu(false);
   };
 
   const handleUpdate = async (e) => {
     e.preventDefault();
+    e.stopPropagation();
     setLoading(true);
+    
     try {
-      const response = await api.put(`/projects/${project.id}`, formData);
-      toast.success("Proyek diperbarui!");
-      setShowEditModal(false);
-      if (onUpdateSuccess) onUpdateSuccess(response.data);
+      const response = await api.put(`/api/projects/${project.id}`, formData);
+      
+      if (response.data.success) {
+        toast.success("Proyek diperbarui!");
+        setShowEditModal(false);
+        
+        if (onUpdateSuccess) {
+          onUpdateSuccess(response.data.data); 
+        }
+      }
     } catch (err) {
+      console.error(err);
       toast.error("Gagal memperbarui proyek");
     } finally {
       setLoading(false);
