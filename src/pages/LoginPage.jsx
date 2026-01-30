@@ -55,7 +55,13 @@ export default function Login() {
         {/* LEFT — FORM */}
         <div className="flex items-center justify-center px-10">
           <div className="w-full max-w-md">
-            
+              <div className="
+      bg-white/10 backdrop-blur-xl
+      border border-white/20
+      rounded-2xl
+      shadow-2xl
+      p-8 md:p-10
+    ">
             <H2 className="text-center mb-2 text-godinov-cyan">
               Login Administrator
             </H2>
@@ -115,6 +121,7 @@ export default function Login() {
 
             </form>
 
+           </div>
           </div>
         </div>
 

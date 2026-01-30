@@ -1,7 +1,14 @@
 import React from "react";
 import { AlertTriangle, X } from "lucide-react";
 
-export default function ConfirmModal({ open, message, onConfirm, onCancel }) {
+export default function ConfirmModal({
+  open,
+  message,
+  onConfirm,
+  onCancel,
+  confirmText = "Hapus",
+  confirmVariant = "danger",
+}) {
   if (!open) return null;
 
   return (
@@ -16,10 +23,19 @@ export default function ConfirmModal({ open, message, onConfirm, onCancel }) {
           <X size={18} />
         </button>
 
-        {/* Icon */}
+        {/* Header */}
         <div className="flex items-center gap-2 mb-3">
-          <AlertTriangle className="text-red-500" size={22} />
-          <h3 className="text-lg font-semibold text-gray-800">Konfirmasi</h3>
+          <AlertTriangle
+            className={
+              confirmVariant === "primary"
+                ? "text-blue-500"
+                : "text-red-500"
+            }
+            size={22}
+          />
+          <h3 className="text-lg font-semibold text-gray-800">
+            Konfirmasi
+          </h3>
         </div>
 
         {/* Message */}
@@ -38,9 +54,13 @@ export default function ConfirmModal({ open, message, onConfirm, onCancel }) {
 
           <button
             onClick={onConfirm}
-            className="px-4 py-2 text-sm rounded-lg bg-red-500 text-white hover:bg-red-600 transition"
+            className={`px-4 py-2 text-sm rounded-lg text-white transition ${
+              confirmVariant === "primary"
+                ? "bg-blue-500 hover:bg-blue-600"
+                : "bg-red-500 hover:bg-red-600"
+            }`}
           >
-            Hapus
+            {confirmText}
           </button>
         </div>
 
