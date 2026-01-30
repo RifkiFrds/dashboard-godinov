@@ -50,7 +50,7 @@ export default function ProjectCreateModal({ isOpen, onClose, onSuccess }) {
         return;
       }
 
-      // POST ke API Laravel
+      // POST ke API
       const response = await api.post("/api/projects", {
         project_code: formData.project_code.toUpperCase(),
         name: formData.name,
@@ -138,7 +138,7 @@ export default function ProjectCreateModal({ isOpen, onClose, onSuccess }) {
                     name="project_code"
                     value={formData.project_code}
                     onChange={handleChange}
-                    placeholder="e.g., GDN-CYBER"
+                    placeholder="e.g., GDN-IND1945"
                     className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none text-sm transition-all uppercase"
                     required
                   />

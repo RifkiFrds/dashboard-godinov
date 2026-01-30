@@ -8,40 +8,20 @@ export default function InboxRow({ item, mode, onOpen, onUpdated }) {
   const [openDeleteConfirm, setOpenDeleteConfirm] = useState(false);
   const [openStatusConfirm, setOpenStatusConfirm] = useState(false);
 
-  // BE: status = 1 (processed), 0 (pending)
-  const isProcessed =
-    item.status === 1 || item.status?.toLowerCase?.() === "sudah diproses";
-
-  /* ================= UPDATE STATUS ================= */
-  const updateStatus = async () => {
-    try {
-      await api.put(`/api/inbox/${item.id}/status`, {
-        status: isProcessed ? 0 : 1,
-      });
-      toast.success(
-        isProcessed
-          ? "Status dibatalkan"
-          : "Pesan berhasil diproses"
-      );
-      onUpdated();
-    } catch (err) {
-      toast.error("Gagal memperbarui status");
-    } finally {
-      setOpenStatusConfirm(false);
-    }
+  const handleStatusChange = async () => {
+    await api.put(`/api/inbox/${item.id}/status`, {
+      status: statusText === "sudah diproses" ? 0 : 1,
+    });
+    toast.success("Status berhasil diperbarui!");
+    onUpdated();
   };
 
   /* ================= DELETE ================= */
   const deleteInbox = async () => {
-    try {
-      await api.delete(`/api/inbox/${item.id}`);
-      toast.success("Pesan berhasil dihapus");
-      onUpdated();
-    } catch (err) {
-      toast.error("Gagal menghapus pesan");
-    } finally {
-      setOpenDeleteConfirm(false);
-    }
+    await api.delete(`/api/inbox/${item.id}`);
+    toast.success("Pesan berhasil dihapus");
+    onUpdated();
+    setOpenConfirm(false);
   };
 
   /* ================= DESKTOP ================= */

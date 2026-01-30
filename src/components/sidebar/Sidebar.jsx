@@ -1,8 +1,9 @@
 import React from "react";
-import { LayoutDashboard, Mail, LogOut, NotebookTabs, ListTodo } from "lucide-react";
+import { LayoutDashboard, Mail, LogOut, NotebookTabs, ListTodo, DollarSign } from "lucide-react";
 import SidebarItem from "./SidebarItem";
 import { motion } from "framer-motion";
 import logo from "../../assets/images/logo.png";
+
 
 export default function Sidebar({ collapsed }) {
   return (
@@ -29,6 +30,7 @@ export default function Sidebar({ collapsed }) {
         <SidebarItem icon={Mail} label="Pesan" to="/inbox" collapsed={collapsed} />
         <SidebarItem icon={NotebookTabs} label="Portfolio" to="/portfolio" collapsed={collapsed} />
         <SidebarItem icon={ListTodo} label="Project" to="/projects" collapsed={collapsed} />
+        <SidebarItem icon={DollarSign} label="Finance" to="/finance" collapsed={collapsed} />
       </nav>
 
       {/* Bottom Divider */}

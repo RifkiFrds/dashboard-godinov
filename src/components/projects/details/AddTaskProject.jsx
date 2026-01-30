@@ -105,7 +105,7 @@ const AddTaskModal = ({ isOpen, onClose, projectId, onTaskAdded, setIsModalOpen 
             />
           </div>
            <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Assignee</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Note</label>
             <input
               name="note"
               value={formData.note}

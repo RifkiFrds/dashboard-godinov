@@ -15,11 +15,11 @@ import {
   Filter,
   Users
 } from "lucide-react";
-import { H2 } from "../components/ui/Text";
-import ProjectCreateModal from "../components/projects/ProjectCreateModal";
-import ProjectCard from "../components/projects/ProjectCard";
+import { H2 } from "../../components/ui/Text";
+import ProjectCreateModal from "../../components/projects/ProjectCreateModal";
+import ProjectCard from "../../components/projects/ProjectCard";
 import { toast } from "react-toastify";
-import api from "../api";
+import api from "../../api";
 
 
 
