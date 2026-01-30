@@ -9,7 +9,7 @@ export default function InboxRow({ item, onOpen, onUpdated }) {
   const statusText = item.status?.toLowerCase();
 
   const handleStatusChange = async () => {
-    await api.put(`/api/updateStatus/${item.id}`, {
+    await api.put(`/api/inbox/${item.id}/status`, {
       status: statusText === "sudah diproses" ? 0 : 1,
     });
     toast.success("Status berhasil diperbarui!");
@@ -17,7 +17,7 @@ export default function InboxRow({ item, onOpen, onUpdated }) {
   };
 
   const deleteInbox = async () => {
-    await api.delete(`/api/deleteInbox/${item.id}`);
+    await api.delete(`/api/inbox/${item.id}`);
     toast.success("Pesan berhasil dihapus");
     onUpdated();
     setOpenConfirm(false);
