@@ -5,6 +5,7 @@ import LoginPage from "../pages/LoginPage";
 import DashboardPage from "../pages/DashboardPage";
 import MessagesPage from "../pages/MessagesPage";
 import PortfolioPage from "../pages/PortfolioPage";
+import MyProfilePage from "../pages/MyProfilePage"; // Import the new page
 
 //Projects Page
 import ProjectManagementPage from "../pages/Projects/ProjectManagementPage";
@@ -49,6 +50,7 @@ export default function AppRouter() {
           <Route index element={<DashboardPage />} />
           <Route path="/inbox" element={<MessagesPage />} />
           <Route path="/portfolio" element={<PortfolioPage />} />
+          <Route path="/profile" element={<MyProfilePage />} /> {/* Add the new profile page route */}
           <Route path="/projects" element={<ProjectManagementPage />} />
           <Route path="/projects/:id" element={<ProjectDetailPage />} />
          

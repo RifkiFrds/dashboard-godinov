@@ -8,20 +8,35 @@ export default function InboxRow({ item, mode, onOpen, onUpdated }) {
   const [openDeleteConfirm, setOpenDeleteConfirm] = useState(false);
   const [openStatusConfirm, setOpenStatusConfirm] = useState(false);
 
+  // Derived state for status
+  const isProcessed = item.status === 1;
+  const statusText = isProcessed ? "sudah diproses" : "belum diproses";
+
   const handleStatusChange = async () => {
-    await api.put(`/api/inbox/${item.id}/status`, {
-      status: statusText === "sudah diproses" ? 0 : 1,
-    });
-    toast.success("Status berhasil diperbarui!");
-    onUpdated();
+    try {
+      await api.put(`/api/inbox/${item.id}/status`, {
+        status: isProcessed ? 0 : 1, // Toggle status
+      });
+      toast.success("Status berhasil diperbarui!");
+      onUpdated();
+      setOpenStatusConfirm(false); // Close modal after successful update
+    } catch (error) {
+      console.error("Error updating status:", error);
+      toast.error("Gagal memperbarui status!");
+    }
   };
 
   /* ================= DELETE ================= */
   const deleteInbox = async () => {
-    await api.delete(`/api/inbox/${item.id}`);
-    toast.success("Pesan berhasil dihapus");
-    onUpdated();
-    setOpenConfirm(false);
+    try {
+      await api.delete(`/api/inbox/${item.id}`);
+      toast.success("Pesan berhasil dihapus");
+      onUpdated();
+      setOpenDeleteConfirm(false); // Corrected state setter
+    } catch (error) {
+      console.error("Error deleting inbox:", error);
+      toast.error("Gagal menghapus pesan!");
+    }
   };
 
   /* ================= DESKTOP ================= */
@@ -39,7 +54,8 @@ export default function InboxRow({ item, mode, onOpen, onUpdated }) {
                   : "bg-yellow-100 text-yellow-700"
               }`}
             >
-              {isProcessed ? "Sudah Diproses" : "Belum Diproses"}
+              {/* Capitalize first letter */}
+              {statusText.charAt(0).toUpperCase() + statusText.slice(1)}
             </span>
           </td>
           <td>{item.created_at}</td>
@@ -56,7 +72,6 @@ export default function InboxRow({ item, mode, onOpen, onUpdated }) {
             />
           </td>
         </tr>
-
         {/* MODAL KONFIRMASI STATUS */}
         <ConfirmModal
           open={openStatusConfirm}
@@ -68,10 +83,8 @@ export default function InboxRow({ item, mode, onOpen, onUpdated }) {
           confirmText="Ya"
           confirmVariant="primary"
           onCancel={() => setOpenStatusConfirm(false)}
-          onConfirm={updateStatus}
+          onConfirm={handleStatusChange}
         />
-
-
         {/* MODAL KONFIRMASI DELETE */}
         <ConfirmModal
           open={openDeleteConfirm}
@@ -79,7 +92,6 @@ export default function InboxRow({ item, mode, onOpen, onUpdated }) {
           onCancel={() => setOpenDeleteConfirm(false)}
           onConfirm={deleteInbox}
         />
-
       </>
     );
   }
@@ -98,7 +110,8 @@ export default function InboxRow({ item, mode, onOpen, onUpdated }) {
               : "bg-yellow-100 text-yellow-700"
           }`}
         >
-          {isProcessed ? "Sudah Diproses" : "Belum Diproses"}
+          {/* Capitalize first letter */}
+          {statusText.charAt(0).toUpperCase() + statusText.slice(1)}
         </span>
 
         <div className="flex gap-2 mt-3">
@@ -114,7 +127,6 @@ export default function InboxRow({ item, mode, onOpen, onUpdated }) {
           />
         </div>
       </div>
-
       {/* MODAL KONFIRMASI STATUS */}
       <ConfirmModal
         open={openStatusConfirm}
@@ -124,9 +136,8 @@ export default function InboxRow({ item, mode, onOpen, onUpdated }) {
             : "Apakah Anda yakin ingin memproses pesan ini?"
         }
         onCancel={() => setOpenStatusConfirm(false)}
-        onConfirm={updateStatus}
+        onConfirm={handleStatusChange} 
       />
-
       {/* MODAL KONFIRMASI DELETE */}
       <ConfirmModal
         open={openDeleteConfirm}

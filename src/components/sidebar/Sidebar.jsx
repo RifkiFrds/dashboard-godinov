@@ -36,8 +36,9 @@ export default function Sidebar({ collapsed }) {
       {/* Bottom Divider */}
       <div className="my-4 h-px w-full bg-gradient-to-r from-transparent via-white/10 to-transparent" />
 
-      {/* Logout */}
-      <SidebarItem icon={LogOut} label="Logout" to="/logout" collapsed={collapsed} />
+      
     </motion.aside>
   );
 }
+{/* Logout */}
+     // <SidebarItem icon={LogOut} label="Logout" to="/logout" collapsed={collapsed} />
