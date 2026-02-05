@@ -9,10 +9,12 @@ import Footer from "../components/Footer";
 import Lottie from "react-lottie-player";
 import { toast } from "react-toastify";
 import { setItemWithExpiry } from "../api/storage";
+import { useAuth } from '../api/AuthContext';
 
 export default function Login() {
-  const navigate = useNavigate();
 
+  const { login } = useAuth();
+  const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [errorMsg, setErrorMsg] = useState("");
@@ -25,7 +27,7 @@ export default function Login() {
 
     try {
       const res = await api.post("/api/login", { email, password });
-      setItemWithExpiry("token", res.data.token, 3600000);// 1 j a m
+      await login(res.data.token);
       toast.success("Berhasil login!");
       navigate("/");
     } catch (err) {
@@ -86,7 +88,7 @@ export default function Login() {
                   <input
                     type="email"
                     required
-                    placeholder="admin@godinov.com"
+                    placeholder="admin@godinov.id"
                     className="bg-transparent flex-1 text-white placeholder-white/40 outline-none"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}

@@ -1,12 +1,22 @@
 import React from "react";
-import { LayoutDashboard, Mail, LogOut, NotebookTabs, ListTodo, DollarSign } from "lucide-react";
+import { LayoutDashboard, Mail, LogOut, NotebookTabs, ListTodo, DollarSign, User } from "lucide-react";
 import SidebarItem from "./SidebarItem";
 import { motion } from "framer-motion";
 import logo from "../../assets/images/logo.png";
-
+import { useAuth } from "../../api/AuthContext";
+import { MENU_ITEMS } from "../../lib/menuItems";
 
 export default function Sidebar({ collapsed }) {
-  return (
+  const { user, loading } = useAuth(); // Ambil data user dari Context
+  // Jika sedang loading, Anda bisa menampilkan skeleton atau null
+  if (loading) return null;
+
+  //filter role
+  const filteredMenu = MENU_ITEMS.filter((item) =>
+    item.roles.includes(user?.role)
+  );
+
+return (
     <motion.aside
       animate={{ width: collapsed ? 80 : 260 }}
       transition={{ duration: 0.25 }}
@@ -21,24 +31,36 @@ export default function Sidebar({ collapsed }) {
         />
       </div>
 
-      {/* Divider */}
       <div className="mb-4 h-px w-full bg-gradient-to-r from-transparent via-white/10 to-transparent" />
 
-      {/* Menu */}
+      {/* Menu Dinamis */}
       <nav className="flex flex-1 flex-col gap-1 overflow-y-auto overflow-x-hidden custom-scrollbar pr-1">
-        <SidebarItem icon={LayoutDashboard} label="Dashboard" to="/" collapsed={collapsed} />
-        <SidebarItem icon={Mail} label="Pesan" to="/inbox" collapsed={collapsed} />
-        <SidebarItem icon={NotebookTabs} label="Portfolio" to="/portfolio" collapsed={collapsed} />
-        <SidebarItem icon={ListTodo} label="Project" to="/projects" collapsed={collapsed} />
-        <SidebarItem icon={DollarSign} label="Finance" to="/finance" collapsed={collapsed} />
+        {loading ? (
+          // Opsi: Tampilkan loading state sederhana di dalam sidebar
+          <div className="text-white/50 text-xs p-3">Loading menu...</div>
+        ) : (
+          filteredMenu.map((item) => (
+            <SidebarItem
+              key={item.to}
+              icon={item.icon}
+              label={item.label}
+              to={item.to}
+              collapsed={collapsed}
+            />
+          ))
+        )}
       </nav>
 
-      {/* Bottom Divider */}
       <div className="my-4 h-px w-full bg-gradient-to-r from-transparent via-white/10 to-transparent" />
 
-      
+
     </motion.aside>
   );
 }
-{/* Logout */}
-     // <SidebarItem icon={LogOut} label="Logout" to="/logout" collapsed={collapsed} />
+      //   {/* Logout  */}
+      // <SidebarItem 
+      //   icon={LogOut} 
+      //   label="Logout" 
+      //   to="/login" 
+      //   collapsed={collapsed} 
+      // />

@@ -2,9 +2,14 @@ import React, { useState, useEffect } from "react";
 import { H2 } from "../components/ui/Text";
 import { toast } from "react-toastify";
 import api from "../api";
+import { useAuth } from "../api/AuthContext";
 import { User, Mail, KeyRound, Save, Loader2, UserCog, UserRoundPen, Eye, EyeOff } from "lucide-react"; // Import Eye and EyeOff
 
 export default function MyProfilePage() {
+  // Ambil data user dari context global
+  const { user, loading } = useAuth();
+
+  //state lokal
   const [name, setName] = useState("");
   const [alias, setAlias] = useState("");
   const [bio, setBio] = useState("");
@@ -22,28 +27,18 @@ export default function MyProfilePage() {
   const [showConfirmNewPassword, setShowConfirmNewPassword] = useState(false);
 
   useEffect(() => {
-    const fetchUserProfile = async () => {
-      try {
-        const response = await api.get("/api/user/profile");
-        if (response.data.success) {
-          const userData = response.data.data;
-          setName(userData.name || "");
-          setAlias(userData.alias || "");
-          setEmail(userData.email || "");
-          setBio(userData.bio || ""); // Assuming bio is also part of user data
-          setRole(userData.role || ""); // Assuming role is also part of user data
-        } else {
-          toast.error("Failed to fetch user profile.");
-        }
-      } catch (error) {
-        console.error("Error fetching user profile:", error);
-        toast.error("Error fetching user profile.");
-      } finally {
-        setLoadingProfile(false);
-      }
-    };
-    fetchUserProfile();
-  }, []);
+    if (user) {
+      setName(user.name || "");
+      setAlias(user.alias || "");
+      setEmail(user.email || "");
+      setBio(user.bio || "");
+      setRole(user.role || "");
+    }
+  }, [user]);
+
+  if (loading) {
+    return <div>Loading profile...</div>;
+  }
 
   const handleUpdateProfile = async (e) => {
     e.preventDefault();
@@ -80,9 +75,10 @@ export default function MyProfilePage() {
     }
 
     try {
-      const response = await api.post("/api/user/change-password", {
+      const response = await api.post("/api/auth/change-password", {
         current_password: currentPassword,
         new_password: newPassword,
+        new_password_confirmation: confirmNewPassword,
       });
       if (response.data.success) {
         toast.success("Password changed successfully!");
@@ -196,8 +192,9 @@ export default function MyProfilePage() {
             </div>
             <button
               type="submit"
-              className="mt-4 inline-flex items-center gap-2 px-5 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition font-medium text-sm disabled:opacity-50 disabled:cursor-not-allowed"
+              className="cursor-not-allowed mt-4 inline-flex items-center gap-2 px-5 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition font-medium text-sm disabled:opacity-50 disabled:cursor-not-allowed"
               disabled={loadingProfile}
+              disabled
             >
               {loadingProfile ? <Loader2 size={18} className="animate-spin" /> : <Save size={18} />}
               {loadingProfile ? "Saving..." : "Save Changes"}
@@ -242,7 +239,7 @@ export default function MyProfilePage() {
                 <KeyRound className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
                 <input
                   type={showNewPassword ? "text" : "password"} // Dynamic type
-                  id="newPassword"
+                  id="new_password"
                   className="w-full pl-10 pr-4 py-2 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-100 text-sm"
                   value={newPassword}
                   onChange={(e) => setNewPassword(e.target.value)}

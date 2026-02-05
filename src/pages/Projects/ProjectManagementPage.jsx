@@ -20,6 +20,7 @@ import ProjectCreateModal from "../../components/projects/ProjectCreateModal";
 import ProjectCard from "../../components/projects/ProjectCard";
 import { toast } from "react-toastify";
 import api from "../../api";
+import { useAuth } from "../../api/AuthContext";
 
 
 
@@ -27,6 +28,7 @@ import api from "../../api";
 
 // --- MAIN PAGE COMPONENT ---
 export default function ProjectManagementPage() {
+  const { user } = useAuth(); // Ambil data user
   const [projects, setProjects] = useState([]);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState("All");
@@ -34,6 +36,7 @@ export default function ProjectManagementPage() {
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
 
+  const canCreateProject = user?.role === 'admin' || user?.role === 'pm';
   // Fetch Projects dari API
   const fetchProjects = async () => {
     setLoading(true);
@@ -95,7 +98,7 @@ export default function ProjectManagementPage() {
             />
             <Search size={16} className="absolute left-3 top-2.5 text-gray-400"/>
           </div>
-           
+          {canCreateProject && (
           <button 
             onClick={() => setIsCreateModalOpen(true)}
             className="inline-flex items-center gap-2 px-4 py-2 bg-gray-900 text-white text-sm font-medium rounded-lg hover:bg-gray-800 transition-all shadow-lg"
@@ -103,6 +106,7 @@ export default function ProjectManagementPage() {
             <Plus size={18} />
             <span className="hidden sm:inline">Project Baru</span>
           </button>
+          )}
         </div>
       </div>
 

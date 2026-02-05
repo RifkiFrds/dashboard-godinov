@@ -63,13 +63,6 @@ export default function Header({ collapsed, setCollapsed }) {
           <div className="absolute right-0 mt-2 w-48 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none z-50 top-full">
             <div className="py-1">
               <button
-                onClick={navigateToProfile}
-                className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900"
-              >
-                <User className="mr-3 h-4 w-4 text-gray-400" />
-                My Profile
-              </button>
-              <button
                 onClick={handleLogoutClick}
                 className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900"
               >

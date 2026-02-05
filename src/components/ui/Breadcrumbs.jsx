@@ -14,13 +14,6 @@ export default function Breadcrumbs({ items }) {
         <ArrowLeft size={16} />
         <span className="hidden sm:inline font-medium">Back</span>
       </button>
-
-      {/* Home Icon */}
-      <Link to="/" className="hover:text-blue-600 transition-colors">
-        <Home size={16} />
-      </Link>
-      
-      <ChevronRight size={14} className="mx-2 text-gray-300" />
       
       <Link to="/finance" className="hover:text-blue-600 transition-colors">
         Finance
