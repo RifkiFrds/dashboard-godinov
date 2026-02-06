@@ -6,14 +6,18 @@ import {
 } from "lucide-react";
 import { toast } from "react-toastify";
 import api from "../../api";
+import { useAuth } from "../../api/AuthContext";
 import RoleProgressBar from "./ProjectProgressBar";
 import { getDynamicStatus, getStatusColor } from "./utils/projectHelpers";
 
 const ProjectCard = ({ project, onSelect, onDeleteSuccess, onUpdateSuccess }) => {
+  const { user } = useAuth(); // Ambil data user
   const [showMenu, setShowMenu] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const [formData, setFormData] = useState({ ...project });
   const [loading, setLoading] = useState(false);
+
+  const canManageProject = user?.role === 'admin' || user?.role === 'pm';
   
   const menuRef = useRef(null);
   const displayStatus = getDynamicStatus(project);
@@ -89,31 +93,34 @@ const ProjectCard = ({ project, onSelect, onDeleteSuccess, onUpdateSuccess }) =>
                 <h4 className="text-sm text-gray-400">{project.client_name}</h4>
               </div>
               
-              <div className="relative" ref={menuRef}>
-                <button 
-                  onClick={(e) => { e.preventDefault(); e.stopPropagation(); setShowMenu(!showMenu); }}
-                  className="p-1.5 text-gray-400 hover:bg-gray-100 rounded-lg"
-                >
-                  <MoreVertical size={18} />
-                </button>
+              {/* Hanya tampilkan tombol menu titik tiga jika user adalah Admin atau PM */}
+              {canManageProject && (
+                <div className="relative" ref={menuRef}>
+                  <button 
+                    onClick={(e) => { e.preventDefault(); e.stopPropagation(); setShowMenu(!showMenu); }}
+                    className="p-1.5 text-gray-400 hover:bg-gray-100 rounded-lg"
+                  >
+                    <MoreVertical size={18} />
+                  </button>
 
-                {showMenu && (
-                  <div className="absolute right-0 mt-2 w-36 bg-white border border-gray-100 rounded-xl shadow-xl z-50">
-                    <button
-                      onClick={(e) => { e.preventDefault(); e.stopPropagation(); setShowEditModal(true); setShowMenu(false); }}
-                      className="w-full flex items-center gap-2 px-4 py-2 text-sm text-gray-600 hover:bg-blue-50 hover:text-blue-600"
-                    >
-                      <Edit2 size={14} /> Edit
-                    </button>
-                    <button
-                      onClick={handleDelete}
-                      className="w-full flex items-center gap-2 px-4 py-2 text-sm text-red-600 hover:bg-red-50 border-t border-gray-50"
-                    >
-                      <Trash2 size={14} /> Delete
-                    </button>
-                  </div>
-                )}
-              </div>
+                  {showMenu && (
+                    <div className="absolute right-0 mt-2 w-36 bg-white border border-gray-100 rounded-xl shadow-xl z-50">
+                      <button
+                        onClick={(e) => { e.preventDefault(); e.stopPropagation(); setShowEditModal(true); setShowMenu(false); }}
+                        className="w-full flex items-center gap-2 px-4 py-2 text-sm text-gray-600 hover:bg-blue-50 hover:text-blue-600"
+                      >
+                        <Edit2 size={14} /> Edit
+                      </button>
+                      <button
+                        onClick={handleDelete}
+                        className="w-full flex items-center gap-2 px-4 py-2 text-sm text-red-600 hover:bg-red-50 border-t border-gray-50"
+                      >
+                        <Trash2 size={14} /> Delete
+                      </button>
+                    </div>
+                  )}
+                </div>
+              )}
             </div>
             
             <div className="space-y-3 mb-6 bg-gray-50/50 p-3 rounded-lg border border-gray-100">
