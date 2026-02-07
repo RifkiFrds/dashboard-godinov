@@ -84,7 +84,7 @@ export default function AppRouter() {
           </Route>
 
            {/* Finance Routes Section */}
-          <Route element={<GatedRoute allowedRoles={['finance']} />}>
+          <Route element={<GatedRoute allowedRoles={['finance', 'admin']} />}>
             <Route path="finance">
               {/* Menu Utama Finance */}
               <Route index element={<FinancePage />} /> 
