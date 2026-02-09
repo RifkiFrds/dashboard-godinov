@@ -190,15 +190,14 @@ export default function MyProfilePage() {
                 />
               </div>
             </div>
-            <button
+           {/* <button
               type="submit"
               className="cursor-not-allowed mt-4 inline-flex items-center gap-2 px-5 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition font-medium text-sm disabled:opacity-50 disabled:cursor-not-allowed"
-              disabled={loadingProfile}
               disabled
             >
               {loadingProfile ? <Loader2 size={18} className="animate-spin" /> : <Save size={18} />}
               {loadingProfile ? "Saving..." : "Save Changes"}
-            </button>
+            </button>*/}
           </form>
         </div>
 

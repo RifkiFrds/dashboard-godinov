@@ -1,7 +1,7 @@
 import React from 'react';
 import { Draggable } from '@hello-pangea/dnd';
 import { CheckCircle2, Clock, UserCheck, Lock, Key, ShieldAlert, KeyRound } from "lucide-react";
-
+import { formatDuration } from '../utils/durationHelpers';
 
 const TaskCard = ({ task, index, isDraggable = true, onOpenOtp }) => {
   const isDone = task.status === 'Done';
@@ -75,16 +75,36 @@ const TaskCard = ({ task, index, isDraggable = true, onOpenOtp }) => {
             <div className={`flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-tighter ${
                 isBlocked ? 'text-orange-600' : 'text-gray-500'
             }`}>
+              {/* KONDISI DONE */}
               {isDone ? (
-                <CheckCircle2 size={14} className="text-green-500" />
-              ) : isBlocked ? (
-                <Lock size={14} className="animate-pulse" />
-              ) : (
-                <Clock size={14} className="text-blue-500" />
+                <div className="flex flex-col gap-0.5">
+                  <div className="flex items-center gap-1.5">
+                    <CheckCircle2 size={14} className="text-green-500" />
+                    <span className="text-green-600">DONE</span>
+                  </div>
+                  {/* DURASI */}
+                  <span className="text-[12px] text-gray-600 font-medium normal-case flex items-center gap-2">
+                    <Clock size={10} /> Selesai dalam: {formatDuration(task.duration_seconds)}
+                  </span>
+                </div>
+              ) : 
+              /* KONDISI BLOCKED */
+              isBlocked ? (
+                <div className="flex items-center gap-1.5">
+                  <Lock size={14} className="animate-pulse" />
+                  <span>{task.status}</span>
+                </div>
+              ) : 
+              /* KONDISI DEFAULT (TODO / IN PROGRESS) */
+              (
+                <div className="flex items-center gap-1.5">
+                  <Clock size={14} className="text-blue-500" />
+                  <span>{task.status}</span>
+                </div>
               )}
-              {task.status}
             </div>
 
+            {/* BAGIAN ASSIGNEE */}
             <div className="flex items-center gap-1 text-[9px] font-medium text-gray-400 bg-gray-100 px-1.5 py-0.5 rounded">
               <UserCheck size={10} />
               <span>{task.assignee || 'Staff'}</span>
