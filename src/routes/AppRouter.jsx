@@ -35,6 +35,20 @@ import AssetManagementPage from "../pages/Finance/AssetManagementPage";
 import ProcurementPage from "../pages/Finance/ProcurementPage";
 import FinancialReportPage from "../pages/Finance/FinancialReportPage";
 
+//RAB Pages
+import RABManagementPage from "../pages/Finance/RAB/RABManagementPage";
+import ProjectSelectorPage from "../pages/Finance/RAB/ProjectSelectorPage";
+// import RABProjectsPage from "../pages/Finance/RAB/RABProjectsPage";
+import CAPEXModulesPage from "../pages/Finance/RAB/CAPEXModulesPage";
+import OPEXModulesPage from "../pages/Finance/RAB/OPEXModulesPage";
+import RevenueAssumptionsPage from "../pages/Finance/RAB/RevenueAssumptionsPage";
+import ROICalculationPage from "../pages/Finance/RAB/ROICalculationPage";
+import BreakEvenPage from "../pages/Finance/RAB/BreakEvenPage";
+import RABDashboardPage from "../pages/Finance/RAB/RABDashboardPage";
+import RABExportPage from "../pages/Finance/RAB/RABExportPage";
+import RABSettingsPage from "../pages/Finance/RAB/RABSettingsPage";
+
+
 export default function AppRouter() {
 
   const PrivateRoute = ({ children }) => {
@@ -101,10 +115,106 @@ export default function AppRouter() {
               <Route path="reports" element={<FinancialReportPage />} /> 
             </Route>
           </Route>
+            <Route element={<GatedRoute allowedRoles={['finance', 'pm', 'admin']} />} />
+              <Route path="rab">
+                  {/* 1. Menu CAPEX */}
+                  <Route 
+                    path="/rab/capex-select" 
+                    element={
+                      <ProjectSelectorPage 
+                        pageTitle="Pilih Proyek untuk CAPEX" 
+                        description="Pilih proyek untuk mengelola modul dan biaya development."
+                        basePath="/rab/capex-modules" 
+                      />
+                    } 
+                  />
 
+                  {/* 2. Menu OPEX */}
+                  <Route 
+                    path="/rab/opex-select" 
+                    element={
+                      <ProjectSelectorPage 
+                        pageTitle="Pilih Proyek untuk OPEX" 
+                        description="Kelola biaya operasional rutin (bulanan/tahunan)."
+                        basePath="/rab/opex-components" 
+                      />
+                    } 
+                  />
 
-        </Route>
+                  {/* 3. Menu Asumsi Pendapatan */}
+                  <Route 
+                    path="/rab/revenue-select" 
+                    element={
+                      <ProjectSelectorPage 
+                        pageTitle="Pilih Proyek untuk Simulasi Revenue" 
+                        description="Atur asumsi volume pengguna dan tarif layanan."
+                        basePath="/rab/revenue-assumptions" 
+                      />
+                    } 
+                  />
+
+                  {/* 4. Menu ROI Analysis */}
+                  <Route 
+                    path="/rab/roi-select" 
+                    element={
+                      <ProjectSelectorPage 
+                        pageTitle="Analisis ROI & NPV" 
+                        description="Lihat hasil kalkulasi profitabilitas proyek."
+                        basePath="/rab/roi-analysis" 
+                      />
+                    } 
+                  />
+
+                  {/* 5. Menu Break Even */}
+                  <Route 
+                    path="/rab/break-select" 
+                    element={
+                      <ProjectSelectorPage 
+                        pageTitle="Break Even Point" 
+                        description="Lihat titik impas berdasarkan biaya tetap dan margin kontribusi."
+                        basePath="/rab/break-even" 
+                      />
+                    } 
+                  />
+
+                   {/* 6. Menu Dashboard */}
+                  <Route 
+                    path="/rab/dashboard-select" 
+                    element={
+                      <ProjectSelectorPage 
+                        pageTitle="Metrics Summary" 
+                        description="Lihat dashboard."
+                        basePath="/rab/dashboard" 
+                      />
+                    } 
+                  />
+
+                  {/* 7. Menu Export */}
+                  <Route 
+                    path="/rab/export-select" 
+                    element={
+                      <ProjectSelectorPage 
+                        pageTitle="Export Proposal" 
+                        description="export dokumen data project."
+                        basePath="/rab/export" 
+                      />
+                    } 
+                  />
+
+                <Route index element={<RABManagementPage />} />
+                {/*<Route path="projects/:projectId" element={<RABProjectsPage />} />*/}
+                <Route path="capex-modules/:projectId" element={<CAPEXModulesPage />} />
+                <Route path="opex-components/:projectId" element={<OPEXModulesPage />} />
+                <Route path="revenue-assumptions/:projectId" element={<RevenueAssumptionsPage />} />
+                <Route path="roi-analysis/:projectId" element={<ROICalculationPage />} />
+                <Route path="break-even/:projectId" element={<BreakEvenPage />} /> 
+                <Route path="dashboard/:projectId" element={<RABDashboardPage />} />     
+                <Route path="export/:projectId" element={<RABExportPage />} />
+                <Route path="settings" element={<RABSettingsPage />} /> 
+              </Route>
+          </Route>
       </Routes>
     </BrowserRouter>
   );
 }
+
