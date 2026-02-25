@@ -81,6 +81,7 @@ export default function ReimbursementDetailModal({ isOpen, onClose, submission, 
                  <div>
                     <label className="text-xs font-bold text-gray-500 uppercase">Keterangan</label>
                     <p className="text-sm text-gray-700 bg-gray-50 p-3 rounded-md border">{submission.description}</p>
+                    <p className="text-sm text-gray-500 bg-gray-50 p-3 rounded-md border">{submission.notes}</p>
                  </div>
                  <div>
                     <label className="text-xs font-bold text-gray-500 uppercase">Lampiran (Nota)</label>
