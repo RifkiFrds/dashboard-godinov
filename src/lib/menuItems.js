@@ -1,4 +1,4 @@
-import { Key, LayoutDashboard, Mail, NotebookTabs, ListTodo, DollarSign, UserCircle, Calculator } from "lucide-react";
+import { Key, LayoutDashboard, Mail, NotebookTabs, ListTodo, DollarSign, UserCircle, Calculator, ReceiptText } from "lucide-react";
 
 export const MENU_ITEMS = [
   {
@@ -30,6 +30,12 @@ export const MENU_ITEMS = [
     to: "/projects",
     icon: ListTodo,
     roles: ["admin", "uiux", "frontend", "backend", "pm"]
+  },
+  {
+    label: "Pengajuan",
+    to: "/submissions",
+    icon: ReceiptText,
+    roles: ["finance", "pm", "uiux", "frontend", "backend", "admin"]
   },
   {
     label: "Finance",

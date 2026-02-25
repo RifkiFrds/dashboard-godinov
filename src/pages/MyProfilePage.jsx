@@ -3,11 +3,11 @@ import { H2 } from "../components/ui/Text";
 import { toast } from "react-toastify";
 import api from "../api";
 import { useAuth } from "../api/AuthContext";
-import { User, Mail, KeyRound, Save, Loader2, UserCog, UserRoundPen, Eye, EyeOff } from "lucide-react"; // Import Eye and EyeOff
+import { User, Mail, KeyRound, Save, Loader2, UserCog, UserRoundPen, Eye, EyeOff, Camera } from "lucide-react"; // Import Eye and EyeOff
 
 export default function MyProfilePage() {
   // Ambil data user dari context global
-  const { user, loading } = useAuth();
+  const { user, loading, refreshUser } = useAuth();
 
   //state lokal
   const [name, setName] = useState("");
@@ -15,10 +15,12 @@ export default function MyProfilePage() {
   const [bio, setBio] = useState("");
   const [email, setEmail] = useState("");
   const [role, setRole] = useState("");
+  const [profileImage, setProfileImage] = useState(null);
+  const [previewImage, setPreviewImage] = useState(null);
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmNewPassword, setConfirmNewPassword] = useState("");
-  const [loadingProfile, setLoadingProfile] = useState(true);
+  const [loadingProfile, setLoadingProfile] = useState(false);
   const [loadingPasswordChange, setLoadingPasswordChange] = useState(false);
 
   // States for password visibility
@@ -33,6 +35,7 @@ export default function MyProfilePage() {
       setEmail(user.email || "");
       setBio(user.bio || "");
       setRole(user.role || "");
+      setPreviewImage(user.profile_image_url || null)
     }
   }, [user]);
 
@@ -40,20 +43,43 @@ export default function MyProfilePage() {
     return <div>Loading profile...</div>;
   }
 
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    if (file && file.type.startsWith("image/")) {
+      setProfileImage(file);
+      setPreviewImage(URL.createObjectURL(file));
+    } else {
+      toast.error("Please select a valid image file.");
+    }
+  };
+
   const handleUpdateProfile = async (e) => {
     e.preventDefault();
     setLoadingProfile(true);
+    
+    const formData = new FormData();
+    formData.append('name', name);
+    formData.append('alias', alias);
+    formData.append('bio', bio);
+    if (profileImage) {
+      formData.append('profile_image', profileImage);
+    }
+
     try {
-      // Assuming 'bio' is also sent in the update request
-      const response = await api.patch("/api/user/profile", { name, alias, bio });
+      const response = await api.post("/api/user/profile", formData, {
+         headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
       if (response.data.success) {
         toast.success("Profile updated successfully!");
+        if (refreshUser) refreshUser();
       } else {
         toast.error(response.data.message || "Failed to update profile.");
       }
     } catch (error) {
       console.error("Error updating profile:", error);
-      toast.error("Error updating profile.");
+      toast.error(error.response?.data?.message || "Error updating profile.");
     } finally {
       setLoadingProfile(false);
     }
@@ -113,6 +139,30 @@ export default function MyProfilePage() {
             Personal Information
           </h3>
           <form onSubmit={handleUpdateProfile} className="space-y-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Profile Picture
+              </label>
+              <div className="flex items-center gap-4">
+                <img
+                  src={previewImage || `https://ui-avatars.com/api/?name=${name}&background=random`}
+                  alt="Profile Preview"
+                  className="w-20 h-20 rounded-full object-cover border-2 border-gray-200"
+                />
+                <label htmlFor="profileImage" className="cursor-pointer inline-flex items-center gap-2 px-4 py-2 bg-gray-100 text-gray-800 rounded-lg hover:bg-gray-200 transition font-medium text-sm">
+                  <Camera size={16} />
+                  Change Picture
+                  <input
+                    type="file"
+                    id="profileImage"
+                    className="hidden"
+                    accept="image/*"
+                    onChange={handleImageChange}
+                    disabled={loadingProfile}
+                  />
+                </label>
+              </div>
+            </div>
              <div>
               <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">
                Full Name
@@ -190,14 +240,14 @@ export default function MyProfilePage() {
                 />
               </div>
             </div>
-           {/* <button
+           <button
               type="submit"
-              className="cursor-not-allowed mt-4 inline-flex items-center gap-2 px-5 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition font-medium text-sm disabled:opacity-50 disabled:cursor-not-allowed"
-              disabled
+              className="mt-4 inline-flex items-center gap-2 px-5 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition font-medium text-sm disabled:opacity-50 disabled:cursor-not-allowed"
+              disabled={loadingProfile}
             >
               {loadingProfile ? <Loader2 size={18} className="animate-spin" /> : <Save size={18} />}
               {loadingProfile ? "Saving..." : "Save Changes"}
-            </button>*/}
+            </button>
           </form>
         </div>
 

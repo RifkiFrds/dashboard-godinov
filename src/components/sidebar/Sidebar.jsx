@@ -8,7 +8,7 @@ import { MENU_ITEMS } from "../../lib/menuItems";
 
 export default function Sidebar({ collapsed }) {
   const { user, loading } = useAuth(); // Ambil data user dari Context
-  // Jika sedang loading, Anda bisa menampilkan skeleton atau null
+  // Jika sedang loading, menampilkan skeleton atau null
   if (loading) return null;
 
   //filter role
@@ -51,16 +51,17 @@ return (
         )}
       </nav>
 
+      {/* Logout  */}
+      <SidebarItem 
+        icon={LogOut} 
+        label="Logout" 
+        to="/login" 
+        collapsed={collapsed} 
+      />
+
       <div className="my-4 h-px w-full bg-gradient-to-r from-transparent via-white/10 to-transparent" />
 
 
     </motion.aside>
   );
 }
-      //   {/* Logout  */}
-      // <SidebarItem 
-      //   icon={LogOut} 
-      //   label="Logout" 
-      //   to="/login" 
-      //   collapsed={collapsed} 
-      // />

@@ -30,6 +30,18 @@
   .bg-godinov-light {
     background-color: var(--godinov-light);
   }
+
+  .input-style {
+    @apply w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none text-sm transition-all;
+  }
+
+  .btn-primary {
+    @apply bg-gray-900 text-white text-sm font-medium rounded-lg hover:bg-gray-800 active:transform active:scale-95 transition-all shadow-lg shadow-gray-200 disabled:opacity-70 disabled:cursor-not-allowed;
+  }
+
+  .btn-secondary {
+    @apply text-sm font-medium text-gray-600 hover:bg-white hover:text-gray-800 hover:shadow-sm rounded-lg transition-all border border-transparent hover:border-gray-200 disabled:opacity-50 px-5 py-2.5;
+  }
 }
 
 /* Custom Scrollbar untuk Sidebar */

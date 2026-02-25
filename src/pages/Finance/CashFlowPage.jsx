@@ -1,7 +1,31 @@
-import React from "react";
-import { ArrowUpRight, ArrowDownRight, Wallet, PieChart } from "lucide-react";
+import React, { useState, useEffect, useCallback, useMemo } from "react";
+import { ArrowUpRight, ArrowDownRight, Wallet, RefreshCw } from "lucide-react";
 import { H2 } from "../../components/ui/Text";
 import Breadcrumbs from "../../components/ui/Breadcrumbs";
+import api from "../../api";
+import { toast, ToastContainer } from 'react-toastify';
+
+// Integrasi Chart.js
+import {
+  Chart as ChartJS,
+  ArcElement,
+  Tooltip,
+  Legend,
+  CategoryScale,
+  LinearScale,
+  BarElement,
+} from 'chart.js';
+import { Doughnut, Bar } from 'react-chartjs-2';
+
+ChartJS.register(ArcElement, Tooltip, Legend, CategoryScale, LinearScale, BarElement);
+
+const formatCurrency = (amount) => {
+    return new Intl.NumberFormat('id-ID', {
+        style: 'currency',
+        currency: 'IDR',
+        minimumFractionDigits: 0
+    }).format(amount || 0);
+};
 
 const StatCard = ({ title, amount, type }) => (
     <div className="bg-white p-5 rounded-xl border border-gray-200 shadow-sm flex items-center justify-between">
@@ -16,73 +40,111 @@ const StatCard = ({ title, amount, type }) => (
 );
 
 export default function CashFlowPage() {
-  return (
-    <div className="w-full max-w-7xl mx-auto p-4 sm:p-6">
-    <Breadcrumbs 
-      items={[
-        { label: "Cash Flow Monitor", path: "/finance/cashflow" } 
-      ]} 
-    />
+    const [summary, setSummary] = useState(null);
+    const [loading, setLoading] = useState(true);
+    const [isRecalculating, setIsRecalculating] = useState(false);
 
-      <div className="mb-6">
-        <H2>Cash Flow Monitor</H2>
-        <p className="text-gray-500 text-sm mt-1">Monitoring alur kas masuk dan keluar bulan ini.</p>
-      </div>
+    const fetchSummary = useCallback(async () => {
+        setLoading(true);
+        try {
+            const response = await api.get('/api/finance/cashflow');
+            setSummary(response.data.data);
+        } catch (error) {
+            toast.error("Gagal memuat ringkasan keuangan.");
+        } finally {
+            setLoading(false);
+        }
+    }, []);
 
-      {/* Stats Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
-        <StatCard title="Total Pemasukan" amount="Rp 125.000.000" type="in" />
-        <StatCard title="Total Pengeluaran" amount="Rp 42.000.000" type="out" />
-        <div className="bg-blue-600 p-5 rounded-xl text-white shadow-md flex flex-col justify-center">
-            <p className="text-blue-100 text-sm mb-1">Saldo Kas Saat Ini</p>
-            <h3 className="text-2xl font-bold">Rp 83.000.000</h3>
-        </div>
-      </div>
+    useEffect(() => {
+        fetchSummary();
+    }, [fetchSummary]);
 
-      {/* Main Content Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        
-        {/* Left: Chart Placeholder / Analysis */}
-        <div className="lg:col-span-2 bg-white rounded-xl border border-gray-200 shadow-sm p-6 min-h-[300px]">
-            <div className="flex justify-between items-center mb-6">
-                <h3 className="font-bold text-gray-800">Analisa Arus Kas</h3>
-                <select className="text-sm border-gray-200 border rounded-md p-1 bg-gray-50">
-                    <option>Bulan Ini</option>
-                    <option>Kuartal Ini</option>
-                </select>
+    const handleRecalculate = async () => {
+        setIsRecalculating(true);
+        try {
+            const response = await api.post('/api/finance/cashflow/recalculate');
+            setSummary(response.data.data);
+            toast.success("Data berhasil diperbarui.");
+        } catch (error) {
+            toast.error("Gagal menghitung ulang data.");
+        } finally {
+            setIsRecalculating(false);
+        }
+    };
+
+    // Data Visualisasi Arus Kas (Hanya Pemasukan vs Pengeluaran)
+    const incomeTotal = useMemo(() => 
+        Number(summary?.total_revenue || 0) + Number(summary?.total_partially_paid_revenue || 0), 
+    [summary]);
+
+    const chartData = useMemo(() => ({
+        labels: ['Total Pemasukan', 'Total Pengeluaran'],
+        datasets: [{
+            data: [incomeTotal, summary?.total_expenses || 0],
+            backgroundColor: ['#10B981', '#EF4444'],
+            hoverOffset: 4
+        }]
+    }), [incomeTotal, summary]);
+
+    if (loading && !summary) return <div className="p-10 text-center">Memuat data...</div>;
+
+    return (
+        <div className="w-full max-w-7xl mx-auto p-4 sm:p-6">
+            <ToastContainer position="top-right" autoClose={3000} />
+            <Breadcrumbs items={[{ label: "Cash Flow Monitor", path: "/finance/cashflow" }]} />
+
+            <div className="flex justify-between items-center mb-8 gap-4">
+                <div>
+                    <H2>Cash Flow Monitor</H2>
+                    <p className="text-gray-500 text-sm mt-1">Monitoring real-time pemasukan dan pengeluaran.</p>
+                </div>
+                <button 
+                    onClick={handleRecalculate}
+                    disabled={isRecalculating}
+                    className="flex items-center gap-2 px-4 py-2 bg-white border border-gray-200 rounded-lg text-sm font-medium hover:bg-gray-50 transition shadow-sm disabled:opacity-50"
+                >
+                    <RefreshCw size={16} className={isRecalculating ? "animate-spin" : ""} />
+                    {isRecalculating ? "Menghitung..." : "Recalculate"}
+                </button>
             </div>
-            {/* Placeholder Grafik */}
-            <div className="w-full h-64 bg-gray-50 rounded-lg border border-dashed border-gray-300 flex flex-col items-center justify-center text-gray-400">
-                <PieChart size={48} className="mb-2 opacity-50"/>
-                <span className="text-sm">Area Grafik (Integrasikan Chart.js / Recharts disini)</span>
-            </div>
-        </div>
 
-        {/* Right: Recent Transactions */}
-        <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-6">
-            <h3 className="font-bold text-gray-800 mb-4">Transaksi Terakhir</h3>
-            <div className="space-y-4">
-                {[1,2,3,4].map((i) => (
-                    <div key={i} className="flex items-center justify-between pb-3 border-b border-gray-50 last:border-0 last:pb-0">
-                        <div className="flex items-center gap-3">
-                            <div className="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center text-gray-500">
-                                <Wallet size={18} />
-                            </div>
-                            <div>
-                                <p className="text-sm font-medium text-gray-800">Pembayaran Server</p>
-                                <p className="text-xs text-gray-500">20 Okt 2023</p>
-                            </div>
-                        </div>
-                        <span className="text-sm font-semibold text-red-600">- Rp 2.5jt</span>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+                <StatCard title="Total Pemasukan" amount={formatCurrency(incomeTotal)} type="in" />
+                <StatCard title="Total Pengeluaran" amount={formatCurrency(summary?.total_expenses)} type="out" />
+                <div className="bg-blue-600 p-5 rounded-xl text-white shadow-md flex flex-col justify-center">
+                    <p className="text-blue-100 text-sm mb-1">Saldo Kas Saat Ini</p>
+                    <h3 className="text-2xl font-bold">{formatCurrency(summary?.net_cash_flow)}</h3>
+                </div>
+            </div>
+
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <div className="lg:col-span-2 bg-white rounded-xl border border-gray-200 p-6 shadow-sm">
+                    <h3 className="font-bold text-gray-800 mb-6">Analisa Pemasukan vs Pengeluaran</h3>
+                    <div className="h-72">
+                        <Bar 
+                            data={{
+                                labels: ['Cash Flow'],
+                                datasets: [
+                                    { label: 'Pemasukan', data: [incomeTotal], backgroundColor: '#10B981' },
+                                    { label: 'Pengeluaran', data: [summary?.total_expenses || 0], backgroundColor: '#EF4444' }
+                                ]
+                            }}
+                            options={{ responsive: true, maintainAspectRatio: false }}
+                        />
                     </div>
-                ))}
-            </div>
-            <button className="w-full mt-4 py-2 text-sm text-blue-600 font-medium hover:bg-blue-50 rounded-lg transition">
-                Lihat Semua
-            </button>
-        </div>
+                </div>
 
-      </div>
-    </div>
-  );
+                <div className="bg-white rounded-xl border border-gray-200 p-6 shadow-sm flex flex-col items-center">
+                    <h3 className="font-bold text-gray-800 mb-6 w-full">Proporsi Kas</h3>
+                    <div className="h-64 w-full">
+                        <Doughnut 
+                            data={chartData} 
+                            options={{ responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom' } } }} 
+                        />
+                    </div>
+                </div>
+            </div>
+        </div>
+    );
 }
