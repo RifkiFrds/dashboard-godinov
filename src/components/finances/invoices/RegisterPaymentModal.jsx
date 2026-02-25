@@ -124,10 +124,10 @@ const RegisterPaymentModal = ({ isOpen, onClose, projectCode, onSuccess, onRefre
                       <input type="radio" name="paymentType" value="full" checked={paymentType === 'full'} onChange={() => setPaymentType('full')} className="h-4 w-4 text-blue-600 border-gray-300 focus:ring-blue-500" />
                       <span className="ml-2 text-sm text-gray-700">Full Payment</span>
                     </label>
-                    <label className="flex items-center cursor-pointer">
+                   {/* <label className="flex items-center cursor-pointer">
                       <input type="radio" name="paymentType" value="partial" checked={paymentType === 'partial'} onChange={() => setPaymentType('partial')} className="h-4 w-4 text-blue-600 border-gray-300 focus:ring-blue-500" />
                       <span className="ml-2 text-sm text-gray-700">Partial Payment</span>
-                    </label>
+                    </label>*/}
                   </div>
                 </div>
 
